@@ -64,7 +64,7 @@ namespace StoryTeller.Conversion
 
         public void Store(string key, object value)
         {
-            _values.Add(key, value);
+            _values[key] = value;
         }
 
         public object Get(string key)

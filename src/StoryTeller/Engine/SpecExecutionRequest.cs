@@ -20,6 +20,7 @@ namespace StoryTeller.Engine
         private readonly IResultObserver _observer;
         public Specification Specification { get; private set; }
         public SpecificationPlan Plan { get; private set; }
+        public FixtureLibrary PlanLibrary { get; private set; }
 
         public SpecExecutionRequest(Specification specification, IResultObserver observer)
         {
@@ -52,6 +53,8 @@ namespace StoryTeller.Engine
 
         public void CreatePlan(FixtureLibrary library)
         {
+            PlanLibrary = library;
+
             var culture = Project.CurrentProject?.Culture;
             if (culture.IsNotEmpty())
             {
@@ -60,8 +63,13 @@ namespace StoryTeller.Engine
 
             performAction(() =>
             {
-                Plan = Specification.CreatePlan(library);
+                Plan = Specification.CreatePlan(PlanLibrary);
             });
+        }
+
+        public void RecreatePlan()
+        {
+            CreatePlan(PlanLibrary);
         }
 
         public string Id

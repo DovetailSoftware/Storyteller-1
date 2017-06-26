@@ -20,6 +20,11 @@ namespace StoryTeller.Engine.Batching
         {
             if (ShouldRetry(results, request.Specification, status))
             {
+                // save the attempt count because it will be reset during RecreatePlan
+                var attempts = request.Plan.Attempts;
+                request.RecreatePlan();
+                request.Plan.Attempts = attempts;
+
                 _resultObserver.SpecRequeued(request);
                 queue.Enqueue(request);
             }
