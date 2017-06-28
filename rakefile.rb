@@ -1,6 +1,6 @@
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "results"
-BUILD_VERSION = '3.0.1'
+BUILD_VERSION = '3.1.0'
 
 NUGET_KEY = ENV['api_key']
 
@@ -10,7 +10,7 @@ include FileTest
 tc_build_number = ENV["BUILD_NUMBER"]
 build_revision = tc_build_number || Time.new.strftime('5%H%M')
 build_number = "#{BUILD_VERSION}.#{build_revision}"
-BUILD_NUMBER = build_number 
+BUILD_NUMBER = build_number
 
 task :ci => [:default, :integration_test, :publish]
 
@@ -29,7 +29,7 @@ end
 desc "Update the version information for the build"
 task :version do
   asm_version = build_number
-  
+
   begin
     commit = `git log -1 --pretty=format:%H`
   rescue
@@ -37,7 +37,7 @@ task :version do
   end
   puts "##teamcity[buildNumber '#{build_number}']" unless tc_build_number.nil?
   puts "Version: #{build_number}" if tc_build_number.nil?
-  
+
   options = {
 	:description => 'Storyteller -- Executable Specifications and Living Documents for .Net',
 	:product_name => 'Storyteller',
@@ -46,9 +46,9 @@ task :version do
 	:version => asm_version,
 	:file_version => build_number,
 	:informational_version => asm_version
-	
+
   }
-  
+
   puts "Writing src/CommonAssemblyInfo.cs..."
 	File.open('src/CommonAssemblyInfo.cs', 'w') do |file|
 		file.write "using System.Reflection;\n"
@@ -76,11 +76,11 @@ end
 
 desc 'Build Nuspec packages'
 task :pack => [:compile] do
-	sh "nuget.exe pack packaging/nuget/storyteller.nuspec -VERSION #{build_number}-alpha -OutputDirectory artifacts"
+	sh "nuget.exe pack packaging/nuget/storyteller.nuspec -VERSION #{build_number} -OutputDirectory artifacts"
 end
 
 task :publish => [:pack] do
-	sh "nuget.exe push artifacts/Storyteller.#{build_number}-alpha.nupkg #{NUGET_KEY} "
+	sh "nuget.exe push artifacts/Storyteller.#{build_number}.nupkg #{NUGET_KEY} "
 end
 
 
@@ -118,14 +118,14 @@ task :sln do
 end
 
 def copyOutputFiles(fromDir, filePattern, outDir)
-	Dir.glob(File.join(fromDir, filePattern)){|file|		
+	Dir.glob(File.join(fromDir, filePattern)){|file|
 		copy(file, outDir) if File.file?(file)
-	} 
+	}
 end
 
 def waitfor(&block)
 	checks = 0
-	until block.call || checks >10 
+	until block.call || checks >10
 		sleep 0.5
 		checks += 1
 	end
@@ -138,7 +138,7 @@ def cleanDirectory(dir)
 		FileUtils.rm_rf dir;
 		waitfor { !exists?(dir) }
 	end
-	
+
 	if dir == 'artifacts'
 		Dir.mkdir 'artifacts'
 	end
