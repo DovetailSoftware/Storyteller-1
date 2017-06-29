@@ -45,11 +45,9 @@ namespace StoryTeller.Engine.Batching
 
             if (status == SpecRunnerStatus.Invalid) return false;
 
-            if (results.HadCriticalException) return false;
+            //if (results.HadCriticalException) return false;
 
             if (specification.Lifecycle == Lifecycle.Acceptance) return false;
-
-
 
             return specification.MaxRetries > (results.Attempts - 1) ||
                    Project.CurrentMaxRetries > (results.Attempts);
